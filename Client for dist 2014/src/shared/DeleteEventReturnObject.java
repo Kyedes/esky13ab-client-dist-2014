@@ -1,4 +1,4 @@
-package transferObjects;
+package shared;
 
 public class DeleteEventReturnObject implements java.io.Serializable{
 	/**

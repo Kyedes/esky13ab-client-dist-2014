@@ -1,13 +1,10 @@
-package transferObjects;
-import java.io.Serializable;
+package shared;
 
-
-public class CreateEventReturnObject implements Serializable{
-
+public class CreateCalendarReturnObject implements java.io.Serializable{
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 7379864247491380334L;
+	private static final long serialVersionUID = -5395651291709879818L;
 	private boolean created;
 	private String message;
 	public boolean isCreated() {
@@ -22,9 +19,6 @@ public class CreateEventReturnObject implements Serializable{
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public CreateEventReturnObject(boolean created, String message) {
-		super();
-		this.created = created;
-		this.message = message;
-	}
+	
+	
 }

@@ -1,4 +1,4 @@
-package transferObjects;
+package shared;
 /**
  * SaveNoteObject is a transfer object class to transfer information to the server.
  * It contains the necessary information to execute the operation.
@@ -9,7 +9,7 @@ public class SaveNoteObject implements java.io.Serializable
 {
 	
 	private static final long serialVersionUID = 1269487144151426011L;
-	private String overallID = "getCalendar";
+	private String overallID = "saveNote";
 	private String userEmail;
 	private String noteContent;
 	private String eventName;

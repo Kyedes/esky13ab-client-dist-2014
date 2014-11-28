@@ -20,12 +20,13 @@ public class ServerConnection {
 	 * @return
 	 * @throws Exception
 	 */
+	
 	public String execute(String jsonOut) throws Exception{
-		Socket connectionSocket = new Socket("localhost", 8888);
+		Socket connectionSocket = new Socket("localhost", 8349);
 		bAOut = crypt.encrypt(jsonOut);
 		connectionSocket.getOutputStream().write(bAOut);
 		int i = connectionSocket.getInputStream().read(bAIn);
-		System.out.print(i);//To do somthing with i, not nessesary
+//		System.out.print(i);//To do somthing with i, not nessesary
 		connectionSocket.close();
 		jsonIn = crypt.decrypt(bAIn);
 		
