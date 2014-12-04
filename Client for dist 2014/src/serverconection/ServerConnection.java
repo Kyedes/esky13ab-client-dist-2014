@@ -1,3 +1,4 @@
+package serverconection;
 import java.net.Socket;
 
 /**
@@ -6,8 +7,7 @@ import java.net.Socket;
  *
  */
 public class ServerConnection {
-	
-//	private String jsonOut;
+
 	private String jsonIn;
 	private byte[] bAOut = new byte[500000];
 	private byte[] bAIn = new byte[500000];
