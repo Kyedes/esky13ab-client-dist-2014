@@ -12,6 +12,9 @@ import shared.Event;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class CalendarTest{
@@ -24,10 +27,11 @@ public class CalendarTest{
 	static DefaultTableModel mtblCalendar; //Table model
 	static JScrollPane stblCalendar; //The scrollpane
 	static JPanel pnlCalendar;
+	static JLabel lblMonth;
 	static int realYear, realMonth, realWeek, realDay, currentYear, currentMonth, currentWeek;
-	
+
 	static ServerConnection sc = new ServerConnection();
-	
+
 	static GetCalendarObject gco = new GetCalendarObject();
 	static GetCalendarReturnObject gcro = new GetCalendarReturnObject();
 	static Gson gson = new Gson();
@@ -41,7 +45,7 @@ public class CalendarTest{
 		catch (InstantiationException e) {}
 		catch (IllegalAccessException e) {}
 		catch (UnsupportedLookAndFeelException e) {}
-		
+
 		//To import the calendar
 		gco.setUserID("esky13ab");//change name to input
 		jsonOut = gson.toJson(gco);
@@ -52,15 +56,15 @@ public class CalendarTest{
 			e.printStackTrace();
 		}
 		gcro = gson.fromJson(jsonIn, GetCalendarReturnObject.class);
-		
-		
+
+
 		//Prepare frame
-		frmMain = new JFrame ("Gestionnaire de clients"); //Create frame
+		frmMain = new JFrame ("Calendar"); //Create frame
 		frmMain.setSize(330, 375); //Set size to 400x400 pixels
 		pane = frmMain.getContentPane(); //Get content pane
 		pane.setLayout(null); //Apply null layout
 		frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //Close when X is clicked
-		
+
 		//Create controls
 		lblWeek = new JLabel ("January");
 		lblYear = new JLabel ("Change year:");
@@ -71,15 +75,16 @@ public class CalendarTest{
 		tblCalendar = new JTable(mtblCalendar);
 		stblCalendar = new JScrollPane(tblCalendar);
 		pnlCalendar = new JPanel(null);
-		
+		lblMonth = new JLabel("Month: ");
+
 		//Set border
 		pnlCalendar.setBorder(BorderFactory.createTitledBorder("Calendar"));
-		
+
 		//Register action listeners
 		btnPrev.addActionListener(new btnPrev_Action());
 		btnNext.addActionListener(new btnNext_Action());
 		cmbYear.addActionListener(new cmbYear_Action());
-		
+
 		//Add controls to pane
 		pane.add(pnlCalendar);
 		pnlCalendar.add(lblWeek);
@@ -88,7 +93,8 @@ public class CalendarTest{
 		pnlCalendar.add(btnPrev);
 		pnlCalendar.add(btnNext);
 		pnlCalendar.add(stblCalendar);
-		
+		pnlCalendar.add(lblMonth);
+
 		//Set bounds
 		frmMain.setBounds(0, 0, 650, 680);
 		pnlCalendar.setBounds(0, 0, 640, 670);
@@ -98,12 +104,13 @@ public class CalendarTest{
 		btnPrev.setBounds(10, 25, 50, 25);
 		btnNext.setBounds(260, 25, 50, 25);
 		stblCalendar.setBounds(10, 50, 600, 500);
-		
+		lblMonth.setBounds(384, 30, 140, 14);
+
 		//Make frame visible
 		frmMain.setResizable(false);
 		frmMain.setVisible(true);
-		
-		
+
+
 		//Get real month/year
 		GregorianCalendar cal = new GregorianCalendar(); //Create calendar
 		realDay = cal.get(GregorianCalendar.DAY_OF_MONTH); //Get day
@@ -113,14 +120,14 @@ public class CalendarTest{
 		currentWeek = realWeek; //Match month, week and year
 		currentMonth = realMonth;
 		currentYear = realYear;
-		
+
 		//Add headers
 		String[] headers = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"}; //All headers
-		
+
 		for (int i=0; i<7; i++){
 			mtblCalendar.addColumn(headers[i]);
 		}
-		
+
 		tblCalendar.getParent().setBackground(tblCalendar.getBackground()); //Set background
 
 		//No resize/reorder
@@ -141,7 +148,7 @@ public class CalendarTest{
 		for (int i = realYear -100; i <= realYear +100; i++){
 			cmbYear.addItem(String.valueOf(i));
 		}
-		
+
 		//Refresh calendar
 		refreshCalendar (realWeek, realYear); //Refresh calendar
 	}
@@ -151,15 +158,15 @@ public class CalendarTest{
 		String[] months =  {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
 		int nod, som, sow, month; //Number Of Days, Start Of Month, Start Of Week
 		int[] weeks = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54};
-		
+
 		//Set variables to current
 		GregorianCalendar cal = new GregorianCalendar( new Locale("Copenhagen")); //Create calendar
 		cal.setWeekDate(year, week, 1);//sets date corresponding to week
 		sow = cal.get(GregorianCalendar.DAY_OF_MONTH);
 		month = cal.get(GregorianCalendar.MONTH);
 		nod = cal.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
-//		System.out.print(month);
-		
+		//		System.out.print(month);
+
 		//Allow/disallow buttons
 		btnPrev.setEnabled(true);
 		btnNext.setEnabled(true);
@@ -168,20 +175,20 @@ public class CalendarTest{
 		lblWeek.setText("Week " + weeks[week-1]); //Refresh the week label (at the top)
 		lblWeek.setBounds(160-lblWeek.getPreferredSize().width/2, 25, 180, 25); //Re-align label with calendar
 		cmbYear.setSelectedItem(String.valueOf(year)); //Select the correct year in the combo box
-
+		lblMonth.setText(String.format("Month: %s", months[month]));
 		//Clear table
 		for (int i=0; i<1; i++){
 			for (int j=0; j<7; j++){
 				mtblCalendar.setValueAt(null, i, j);
 			}
 		}
-		
-		
+
+
 		//Update day of week with date
-		String[] headers = {"Mon", "Tue", "Wed ", "Thu", "Fri", "Sat", "Sun"}; //All headers
-		
+		String[] headers = {"Sun", "Mon", "Tue", "Wed ", "Thu", "Fri", "Sat"}; //All headers
+
 		int sowx = sow;
-		sowx++;
+
 		for(int i = 0; i<headers.length; i++){
 			if(sowx >= nod+1){
 				sowx = 1;
@@ -191,52 +198,56 @@ public class CalendarTest{
 			sowx++;
 		}
 		mtblCalendar.setColumnIdentifiers((String[]) headers);
-		
-		
+
+
 		int sowy = sow;
-		sowy++;
-		
-		for (ArrayList<Event> i : gcro.getCalendars()){
-			for(Event x : i){
-				
-				for(int y = 0; y<7;y++){
-					StringBuilder sb = new StringBuilder();
-					int z;
+		for(int y = 0; y < mtblCalendar.getColumnCount();y++){
+			
+			String dailyEvents ="";
+			for (ArrayList<Event> i : gcro.getCalendars()){
+				for(Event x : i){
+					
+					Date d = new Date();
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyy-dd-MM HH:mm:ss");
+
 					try{
-						
-						sb.append(x.getStart().get(0).charAt(6));
-						sb.append(x.getStart().get(0).charAt(7));
-						System.out.print(sb.toString());
-						Integer.parseInt(String.valueOf(x.getStart().get(0).charAt(7)));
-						Integer.parseInt(String.valueOf(x.getStart().get(0).charAt(6)));
-						z = Integer.parseInt(sb.toString());
-					}catch(NumberFormatException e){
-						Integer.parseInt(String.valueOf(x.getStart().get(0).charAt(6)));
-						sb.append(x.getStart().get(0).charAt(6));
-						z = Integer.parseInt(sb.toString());
+						d = sdf.parse(x.getStart().get(0));
+						//System.out.print(d);
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-					
-//					System.out.print(z + "\n");
-					if((sowy == z)){
-						mtblCalendar.setValueAt(x.getDescription(), 1, y+1);
+					GregorianCalendar caly = new GregorianCalendar();
+					caly.setGregorianChange(d);
+					if(year == caly.get(GregorianCalendar.YEAR)){
+						if (month == caly.get(GregorianCalendar.MONTH)){
+							if((sowy == caly.get(GregorianCalendar.DAY_OF_MONTH))){
+								dailyEvents = dailyEvents.concat(String.format("%s\n", x.getTitle()));
+							}
+						}
 					}
-					
-					sowy++;
 				}
 			}
+//			dailyEvents.concat("test");
+			System.out.print(dailyEvents);
+			mtblCalendar.setValueAt(dailyEvents, 0, y);
+			sowy++;
+			if(sowy >= nod+1){
+				sowy = 1;
+			}
 		}
-		
-		
+
+
 		//To paint events onto the calendar
-//		 
-		
+		//		 
+
 		//Draw calendar
-				//        for (int i=1; i<=nod; i++){
-				//            int row = new Integer((i+som-2)/7);
-				//            int column  =  (i+som-2)%7;
-				//            mtblCalendar.setValueAt(i, row, column);
-				//        }
-		
+		//        for (int i=1; i<=nod; i++){
+		//            int row = new Integer((i+som-2)/7);
+		//            int column  =  (i+som-2)%7;
+		//            mtblCalendar.setValueAt(i, row, column);
+		//        }
+
 		//Apply renderers
 		tblCalendar.setDefaultRenderer(tblCalendar.getColumnClass(0), new tblCalendarRenderer());
 	}
@@ -244,16 +255,16 @@ public class CalendarTest{
 	static class tblCalendarRenderer extends DefaultTableCellRenderer{
 		public Component getTableCellRendererComponent (JTable table, Object value, boolean selected, boolean focused, int row, int column){
 			super.getTableCellRendererComponent(table, value, selected, focused, row, column);
-			if (column == 5 || column == 6){ //Week-end
+			if (column == 0 || column == 6){ //Week-end
 				setBackground(new Color(255, 220, 220));
 			}
 			else{ //Week
 				setBackground(new Color(255, 255, 255));
 			}
 			if (value != null){
-				if (Integer.parseInt(value.toString()) == realDay && currentWeek == realWeek && currentYear == realYear){ //Today
-					setBackground(new Color(220, 220, 255));
-				}
+//				if (Integer.parseInt(value.toString()) == realDay && currentWeek == realWeek && currentYear == realYear){ //Today
+//					setBackground(new Color(220, 220, 255));
+//				}
 			}
 			setBorder(null);
 			setForeground(Color.black);
